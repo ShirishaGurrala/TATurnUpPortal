@@ -9,7 +9,7 @@ namespace TATurnUpPortal.Pages
 {
     public class LoginPage
     {
-        public void LoginActions()
+        public void LoginActions(IWebDriver driver)
         {
             // Launch Turnup Portal
             driver.Navigate().GoToUrl("http://horse.industryconnect.io/");

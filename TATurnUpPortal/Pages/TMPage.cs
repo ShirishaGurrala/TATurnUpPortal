@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
+using TATurnUpPortal.Utilities;
 
 namespace TATurnUpPortal.Pages
 {
     public class TMPage
     {
-        public void CreateTimeRecord()
+        public void CreateTimeRecord(IWebDriver driver)
         {
             // Click on Create New Button
             IWebElement createNewButton = driver.FindElement(By.XPath("//*[@id=\"container\"]/p/a"));
@@ -21,6 +23,17 @@ namespace TATurnUpPortal.Pages
 
             IWebElement timeOption = driver.FindElement(By.XPath("//*[@id=\"TypeCode_listbox\"]/li[2]"));
             timeOption.Click();
+
+            //Create webdriver object which takes driver and timespan as params
+            //using above webdriver object created call until method
+            //Inside until method use seleniumextras.waithelpers.expectedCon element vsible
+            //Inside element visible use use id and give the element value
+            WebDriverWait waitCodeTextBox = new WebDriverWait(driver, TimeSpan.FromMilliseconds(2000));
+            waitCodeTextBox.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.Id("Code")));
+
+            //call wait util class 
+            //Wait.WaitToBeVisible(driver, "Id", "Code", 2);
+
 
             // Type code into Code textbox
             IWebElement codeTextbox = driver.FindElement(By.Id("Code"));
@@ -59,6 +72,73 @@ namespace TATurnUpPortal.Pages
             }
             Thread.Sleep(3000);
 
+        }
+        public void EditTimeRecord(IWebDriver driver)
+        {
+            // Go to last page 
+            IWebElement goToLastEditPageButton = driver.FindElement(By.XPath("//*[@id=\"tmsGrid\"]/div[4]/a[4]/span"));
+            goToLastEditPageButton.Click();
+
+            // edit last item ( identify edit button the last item)
+            IWebElement editButton = driver.FindElement(By.XPath("//*[@id=\"tmsGrid\"]/div[3]/table/tbody/tr[last()]/td[5]/a[1]"));
+            editButton.Click();
+            Thread.Sleep(3000);
+
+
+            // Similar to create update values & save
+            // Type code into Code textbox
+            IWebElement editCodeTextbox = driver.FindElement(By.Id("Code"));
+            editCodeTextbox.Clear();
+            editCodeTextbox.SendKeys("Editedtest12");
+
+            //Type description into Description textbox
+            IWebElement editDescriptionTextbox = driver.FindElement(By.Id("Description"));
+            editDescriptionTextbox.Clear();
+            editDescriptionTextbox.SendKeys("Editedtest12 description");
+
+            // Click on Save button
+            IWebElement saveEditButton = driver.FindElement(By.Id("SaveButton"));
+            saveEditButton.Click();
+            Thread.Sleep(3000);
+
+            // navigate to last page
+            IWebElement goToLastEditedPageButton = driver.FindElement(By.XPath("//*[@id=\"tmsGrid\"]/div[4]/a[4]/span"));
+            goToLastEditedPageButton.Click();
+
+            // identify last element and verify two fields 
+
+            IWebElement newEditCode = driver.FindElement(By.XPath("//*[@id=\"tmsGrid\"]/div[3]/table/tbody/tr[last()]/td[1]"));
+            if (newEditCode.Text == "Editedtest12")
+            {
+                Console.WriteLine("Time record code edited successfuly!");
+            }
+            else
+            {
+                Console.WriteLine("Time record has not been edited!");
+            }
+
+            IWebElement newEditDescription = driver.FindElement(By.XPath("//*[@id=\"tmsGrid\"]/div[3]/table/tbody/tr[last()]/td[3]"));
+            if (newEditDescription.Text == "Editedtest12 description")
+            {
+                Console.WriteLine("Time record description edited successfuly!");
+            }
+            else
+            {
+                Console.WriteLine("Time record has not been edited!");
+            }
+            Thread.Sleep(3000);
+        }
+        public void DeleteTimeRecord(IWebDriver driver)
+        {
+            //Identify fisrt element and retrieve code and description values
+            //Print the values                                                    
+            IWebElement retrieveCode = driver.FindElement(By.XPath("//*[@id=\"tmsGrid\"]/div[3]/table/tbody/tr[1]/td[1]"));
+            Console.WriteLine($"The code value is {retrieveCode.Text}");
+            Console.WriteLine("The code value is " + retrieveCode.Text);
+
+            //Identify Delete button and click
+            IWebElement deleteButton = driver.FindElement(By.XPath("//*[@id=\"tmsGrid\"]/div[3]/table/tbody/tr[1]/td[5]/a[2]"));
+            deleteButton.Click();
         }
     }
 }
