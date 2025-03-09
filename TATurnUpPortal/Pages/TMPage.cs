@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using TATurnUpPortal.Utilities;
@@ -13,9 +14,16 @@ namespace TATurnUpPortal.Pages
     {
         public void CreateTimeRecord(IWebDriver driver)
         {
-            // Click on Create New Button
-            IWebElement createNewButton = driver.FindElement(By.XPath("//*[@id=\"container\"]/p/a"));
-            createNewButton.Click();
+            try
+            {
+                IWebElement createNewButton = driver.FindElement(By.XPath("//*[@id=\"container\"]/p/a"));
+                createNewButton.Click();
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail("Create New Button hasn't been found.");
+            }
+            
 
             // Select Time from dropdown
             IWebElement typeCodeDropdown = driver.FindElement(By.XPath("//*[@id=\"TimeMaterialEditForm\"]/div/div[1]/div/span[1]/span/span[2]/span"));
@@ -31,11 +39,12 @@ namespace TATurnUpPortal.Pages
             WebDriverWait waitCodeTextBox = new WebDriverWait(driver, TimeSpan.FromMilliseconds(2000));
             waitCodeTextBox.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(By.Id("Code")));
 
-            //call wait util class 
+            // wait util class can call its methods directly because the methods declared are static, refer below
+            //public static void WaitToBeVisible(IWebDriver driver, String locatorType, String locatorValue, int seconds)
             //Wait.WaitToBeVisible(driver, "Id", "Code", 2);
 
 
-            // Type code into Code textbox
+        // Type code into Code textbox
             IWebElement codeTextbox = driver.FindElement(By.Id("Code"));
             codeTextbox.SendKeys("TA Programme");
 
@@ -62,14 +71,14 @@ namespace TATurnUpPortal.Pages
          
             IWebElement newCode = driver.FindElement(By.XPath("//*[@id=\"tmsGrid\"]/div[3]/table/tbody/tr[last()]/td[1]"));
 
-            if (newCode.Text == "TA Programme")
-            {
-                Console.WriteLine("Time record created successfuly!");
-            }
-            else
-            {
-                Console.WriteLine("New time record has not been created!");
-            }
+            Assert.That(newCode.Text == "TA Programme", "New time record has not been created!");
+            //{
+            //   Assert.Pass("Time record created successfuly!");
+            //}
+            //else
+            //{
+            //   Assert.Fail("New time record has not been created!");
+            //}
             Thread.Sleep(3000);
 
         }
